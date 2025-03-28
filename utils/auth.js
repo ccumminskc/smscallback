@@ -7,12 +7,15 @@ async function getFilemakerToken() {
   const now = Date.now();
 
   if (cachedToken && tokenExpiration && now < tokenExpiration) {
+    console.log('🔄 Reusing cached FileMaker token');
     return cachedToken;
   }
 
-  try {
-    const url = `${process.env.FILEMAKER_SERVER_URL}/fmi/data/v1/databases/${process.env.FILEMAKER_DATABASE}/sessions`;
+  const url = `${process.env.FILEMAKER_SERVER_URL}/fmi/data/v1/databases/${process.env.FILEMAKER_DATABASE}/sessions`;
 
+  console.log(`🎯 Requesting new FileMaker token from: ${url}`);
+
+  try {
     const response = await axios.post(url, {}, {
       headers: {
         Authorization: `Basic ${Buffer.from(`${process.env.FILEMAKER_USERNAME}:${process.env.FILEMAKER_PASSWORD}`).toString('base64')}`,
@@ -20,10 +23,18 @@ async function getFilemakerToken() {
       }
     });
 
-    cachedToken = response.data.response.token;
-    tokenExpiration = now + 14 * 60 * 1000; // 14-minute buffer
+    const token = response.data?.response?.token;
 
-    return cachedToken;
+    if (!token) {
+      throw new Error('Token not returned in FileMaker response');
+    }
+
+    console.log('✅ FileMaker token acquired:', token);
+
+    cachedToken = token;
+    tokenExpiration = now + 14 * 60 * 1000; // 14-minute expiration buffer
+
+    return token;
   } catch (error) {
     console.error('❌ Failed to get FileMaker token:', error.response?.data || error.message);
     throw new Error('Unable to authenticate with FileMaker');
