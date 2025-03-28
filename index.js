@@ -1,16 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const twilioStatus = require('./routes/twilioStatus');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/', twilioStatus);
+// Catch Twilio delivery status callbacks
+app.post('/twilio-status', (req, res) => {
+  console.log('📦 Incoming Twilio delivery status:');
+  console.log(req.body);
 
-app.listen(port, () => {
-  console.log(`Webhook server listening on port ${port}`);
+  res.status(200).send('Received!');
 });
 
+app.listen(port, () => {
+  console.log(`🚀 Webhook server listening on port ${port}`);
+});
