@@ -1,15 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Catch Twilio delivery status callbacks
 app.post('/twilio-status', (req, res) => {
   console.log('📦 Incoming Twilio delivery status:');
-  console.log(req.body);
+  console.log(req.body); // This will appear in Railway deploy logs
 
   res.status(200).send('Received!');
 });
