@@ -13,6 +13,13 @@ app.post('/twilio-status', (req, res) => {
   res.status(200).send('Received!');
 });
 
+app.post('*', (req, res) => {
+  console.log('🚨 Caught unexpected POST path:');
+  console.log('Path:', req.path);
+  console.log('Body:', req.body);
+  res.status(404).send('Not Found');
+});
+
 app.listen(port, () => {
   console.log(`🚀 Webhook server listening on port ${port}`);
 });
