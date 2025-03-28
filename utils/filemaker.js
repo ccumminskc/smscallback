@@ -1,11 +1,14 @@
 const axios = require('axios');
 
-async function updateSmsStatusInFilemaker(data) {
-  const { messageSid, status, error, errorCode } = data;
-
+async function updateSmsStatusInFilemaker({ messageSid, status, error, errorCode }) {
   const scriptPayload = {
     script: 'Update SMS Status',
-    scriptParam: JSON.stringify({ messageSid, status, error, errorCode })
+    scriptParam: JSON.stringify({
+      messageSid,
+      status,
+      error,
+      errorCode
+    })
   };
 
   const response = await axios.post(
